@@ -2,7 +2,7 @@ import requests
 import json
 
 COMMON_HEADERS = {'Content-type': 'application/json'}
-END_POINT = '127.0.0.1'
+END_POINT = 'pizzapi.ddns.net'
 PORT = 5000
 
 

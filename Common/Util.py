@@ -30,7 +30,3 @@ def get_variables(command_list):
                     variables[val] = value
 
     return variables
-
-
-
-#--job=L --duration=120 --intensity=2 --recurrent=1 --start="01-31-2022 10:02" --vm=1
