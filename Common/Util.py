@@ -6,18 +6,31 @@ def get_formatted_date(now):
 
 def get_variables(command_list):
     variables = {}
-    variables["account_username"] = ""
-    variables["vm"] = ""
-    variables["config"] = ""
+
+    accepted_variables = {
+        "user": "account_username",
+        "vm": "vm",
+        "config": "config",
+        "job": "bot_id",
+        "job_id": "job_id",
+        "duration": "duration",
+        "intensity": "intensity",
+        "start": "start_time",
+        "recurrent": "recurrent",
+        "schedule": "schedule"
+    }
+
     for variable in command_list[1:]:
-        if variable != "":
+        if "=" in variable:
             split = variable.split("=")
-            variable_name = split[0].replace("-", "")
-            value = split[1].replace('"', "").replace("'", '')
-            if variable_name.lower() == "user":
-                variables["account_username"] = value
-            if variable_name.lower() == "vm":
-                variables["vm"] = value
-            if variable_name.lower() == "config":
-                variables["config"] = value
+            variable_name = split[0].strip()
+            value = split[1].replace('"', "").replace("'", '').strip()
+            for key, val in accepted_variables.items():
+                if variable_name.lower() == key:
+                    variables[val] = value
+
     return variables
+
+
+
+#--job=L --duration=120 --intensity=2 --recurrent=1 --start="01-31-2022 10:02" --vm=1

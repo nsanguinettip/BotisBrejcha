@@ -1,26 +1,92 @@
 import datetime
+import json
 import logging
 from telegram import Update
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import Updater
 from telegram.ext import MessageHandler, Filters
-from telegram import InlineQueryResultArticle, InputTextMessageContent
 from Common.Util import get_formatted_date, get_variables
-from Common.APIManagement import add_infra_data, get_infra_data as get_infra_list, get_acc_infra_data, update_infra_data
+from Common.APIManagement import add_infra_data, get_infra_data as get_infra_list, get_acc_infra_data, update_infra_data, get_pending_jobs, add_pending_job, delete_pending_job, get_recurrent_jobs
 
 TOKEN = '5357158986:AAFjtqG2iToqVfLOD8VIlO_pGlGjg-k7VyI'
+
+
+def jobs(update: Update, context: CallbackContext):
+
+    command_list = update.message.text.split(' --')
+    main_command = command_list[0].strip().split(" ")[1]
+    response = "(%s) command invalid. " % main_command
+
+    if main_command == "new":  # /run new --job=L --duration=120 --intensity=2 --recurrent=1 --start="01-31-2022 10:02" --vm=1
+        response = add_job(command_list)
+    if main_command == "list":  # /run list --vm=1
+        response = get_job_list(command_list)
+    if main_command == "delete":  # /run delete --job_id=1
+        response = delete_job(command_list)
+
+    # TODO: Agregar List, se puede pensar en hacer un utilitis para enviar un texto procesado de los posts de bodzin
+
+    context.bot.send_message(chat_id=update.effective_chat.id, text=response)
+
+
+def get_job_list(command_list):
+    variables = get_variables(command_list)
+    if "vm" in variables:
+        response = get_pending_jobs(variables["vm"])
+        response2 = get_recurrent_jobs(variables["vm"])
+        return response["data"] + response2["data"]
+    else:
+        return "Missing parameters."
+
+
+# /run new --job=L --duration=120 --intensity=2 --recurrent=1 --start="01-31-2022 10:02" --vm=1
+def add_job(command_list):
+    variables = get_variables(command_list)
+    if "bot_id" in variables and "vm" in variables:
+        new_config = process_config(variables)
+        new_job = {"infra_id": variables["vm"], "bot_id": variables["bot_id"],
+                   "date_created": get_formatted_date(datetime.datetime.now()), "status": "Pending",
+                   "start_time": variables["start_time"], "recurrent": variables["recurrent"], "schedule": "", "config": json.dumps(new_config)}
+        response = add_pending_job([new_job])
+        return response
+    else:
+        return "Missing parameters."
+
+
+def process_config(variables):
+    new_config = {"duration": variables["duration"], "intensity": variables["intensity"]}
+    if "skip_count" in variables:
+        new_config["skip_count"] = variables["skip_count"]
+    if "post_list" in variables:
+        new_config["post_list"] = variables["post_list"]
+    new_config["interaction_flags"] = {}
+    new_config["interaction_flags"]["only_dms"] = False
+    new_config["interaction_flags"]["messages_on"] = True
+    new_config["interaction_flags"]["comments_on"] = True
+    new_config["interaction_flags"]["likes_on"] = True
+    return new_config
+
+
+def delete_job(command_list):
+    variables = get_variables(command_list)
+    if "job_id" in variables != "":
+        response = delete_pending_job(variables["job_id"])
+        return response
+    else:
+        return "Missing parameters."
+
 
 
 def infra(update: Update, context: CallbackContext):
     if "--config=" in update.message.text:
         split = update.message.text.split("--config=")
         config = split[-1].replace("\n", "").replace("\t", "")
-        command_list = split[0].split(' ')[1:]
+        command_list = split[0].split('--')[1:]
         main_command = command_list[0]
         response = config_infra(command_list, config)
     else:
-        command_list = update.message.text.split(' ')[1:]
+        command_list = update.message.text.split('--')[1:]
         main_command = command_list[0]
         response = "(%s) command invalid. " % main_command
 
@@ -36,7 +102,7 @@ def infra(update: Update, context: CallbackContext):
 
 def get_infra(command_list):
     variables = get_variables(command_list)
-    if variables["account_username"] != "":
+    if "account_username" in variables:
         response = get_acc_infra_data(variables["account_username"])
         return response
     else:
@@ -45,7 +111,7 @@ def get_infra(command_list):
 
 def add_infra(command_list):
     variables = get_variables(command_list)
-    if variables["account_username"] != "" and variables["vm"] != "":
+    if "account_username" in variables and "vm" in variables:
         new_infra = {
             "account_username": variables["account_username"],
             "vm": variables["vm"],
@@ -61,7 +127,7 @@ def add_infra(command_list):
 
 def config_infra(command_list, config):
     variables = get_variables(command_list)
-    if variables["vm"] != "":
+    if "vm" in variables != "":
         infra_data = {
             "vm": variables["vm"],
             "config": config
@@ -71,7 +137,7 @@ def config_infra(command_list, config):
     else:
         return "Missing parameters."
 
-
+'''
 def inline_caps(update: Update, context: CallbackContext):
     query = update.inline_query.query
     if not query:
@@ -82,6 +148,7 @@ def inline_caps(update: Update, context: CallbackContext):
         input_message_content=InputTextMessageContent(query.upper())
     )]
     context.bot.answer_inline_query(update.inline_query.id, results)
+'''
 
 
 def help(update: Update, context: CallbackContext):
@@ -104,13 +171,6 @@ def run(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.effective_chat.id, text=soon_message)
 
 
-def schedule(update: Update, context: CallbackContext):
-    soon_message = 'Falta poquito, no seas ansioso %s!' % update.effective_user.first_name
-    print(update.message.text)
-    print(update.message.from_user.username)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=soon_message)
-
-
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
 updater = Updater(token=TOKEN, use_context=True)
@@ -119,7 +179,7 @@ dispatcher = updater.dispatcher
 infra_handler = CommandHandler('infra', infra)
 dispatcher.add_handler(infra_handler)
 
-run_handler = CommandHandler('run', run)
+run_handler = CommandHandler('run', jobs)
 dispatcher.add_handler(run_handler)
 
 help_handler = CommandHandler('help', help)
