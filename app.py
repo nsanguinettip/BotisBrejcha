@@ -102,8 +102,8 @@ def infra(update: Update, context: CallbackContext):
 
 def get_infra(command_list):
     variables = get_variables(command_list)
-    if "account_username" in variables:
-        response = get_acc_infra_data(variables["account_username"])
+    if "vm" in variables:
+        response = get_acc_infra_data(variables["vm"])
         return response
     else:
         return "Missing parameters."

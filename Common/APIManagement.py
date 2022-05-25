@@ -60,7 +60,7 @@ def get_infra_data():
 
 
 def get_acc_infra_data(account_username):
-    response = requests.get("http://%s:%d/api/v1/Infrastructure/account/?account_username=%s" %
+    response = requests.get("http://%s:%d/api/v1/Infrastructure/id/?infra_id=%s" %
                             (END_POINT, PORT, account_username), headers=COMMON_HEADERS)
     return response.json()
 
