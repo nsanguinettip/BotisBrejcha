@@ -18,7 +18,9 @@ def get_variables(command_list):
         "start": "start_time",
         "recurrent": "recurrent",
         "schedule": "schedule",
-        "post_list": "post_list"
+        "post_list": "post_list",
+        "only_dm": "only_dm",
+        "interactions": "interactions"
     }
 
     for variable in command_list[1:]:

@@ -63,10 +63,19 @@ def process_config(variables):
     if "post_list" in variables:
         new_config["post_list"] = variables["post_list"]
     new_config["interaction_flags"] = {}
-    new_config["interaction_flags"]["only_dms"] = False
-    new_config["interaction_flags"]["messages_on"] = True
-    new_config["interaction_flags"]["comments_on"] = True
-    new_config["interaction_flags"]["likes_on"] = True
+    if "only_dm" in variables:
+        new_config["interaction_flags"]["only_dms"] = bool(variables["only_dm"])
+    else:
+        new_config["interaction_flags"]["only_dms"] = False
+
+    if "interactions" in variables:
+        new_config["interaction_flags"]["comments_on"] = ("c" in str(variables["interactions"]).lower())
+        new_config["interaction_flags"]["messages_on"] = ("m" in str(variables["interactions"]).lower())
+        new_config["interaction_flags"]["likes_on"] = ("l" in str(variables["interactions"]).lower())
+    else:
+        new_config["interaction_flags"]["messages_on"] = True
+        new_config["interaction_flags"]["comments_on"] = True
+        new_config["interaction_flags"]["likes_on"] = True
     return new_config
 
 
