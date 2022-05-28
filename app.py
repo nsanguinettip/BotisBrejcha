@@ -58,6 +58,8 @@ def process_config(variables):
     new_config = {"duration": variables["duration"], "intensity": variables["intensity"]}
     if "skip_count" in variables:
         new_config["skip_count"] = variables["skip_count"]
+    else:
+        new_config["skip_count"] = 15
     if "post_list" in variables:
         new_config["post_list"] = variables["post_list"]
     new_config["interaction_flags"] = {}
