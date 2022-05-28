@@ -18,7 +18,7 @@ def jobs(update: Update, context: CallbackContext):
     main_command = command_list[0].strip().split(" ")[1]
     response = "(%s) command invalid. " % main_command
 
-    if main_command == "new":  # /run new --job=L --duration=120 --intensity=2 --recurrent=1 --start="01-31-2022 10:02" --vm=1
+    if main_command == "new":  # /run new --job=L --duration=120 --intensity=2 --recurrent=1 --start="01-31-2022 10:02" --vm=1 --links=""
         response = add_job(command_list)
     if main_command == "list":  # /run list --vm=1
         response = get_job_list(command_list)
@@ -40,7 +40,7 @@ def get_job_list(command_list):
         return "Missing parameters."
 
 
-# /run new --job=L --duration=120 --intensity=2 --recurrent=1 --start="01-31-2022 10:02" --vm=1
+# /run new --job=L --duration=120 --intensity=2 --recurrent=1 --only_dm=0 --start="01-31-2022 10:02" --vm=1 --post_list=""
 def add_job(command_list):
     variables = get_variables(command_list)
     if "bot_id" in variables and "vm" in variables:
@@ -75,7 +75,6 @@ def delete_job(command_list):
         return response
     else:
         return "Missing parameters."
-
 
 
 def infra(update: Update, context: CallbackContext):
