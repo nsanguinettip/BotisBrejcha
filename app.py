@@ -27,7 +27,7 @@ def jobs(update: Update, context: CallbackContext):
 
     # TODO: Agregar List, se puede pensar en hacer un utilitis para enviar un texto procesado de los posts de bodzin
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text=response)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=json.dumps(response, indent=4, sort_keys=True))
 
 
 def get_job_list(command_list):
@@ -77,17 +77,16 @@ def delete_job(command_list):
         return "Missing parameters."
 
 
-
 def infra(update: Update, context: CallbackContext):
     if "--config=" in update.message.text:
         split = update.message.text.split("--config=")
         config = split[-1].replace("\n", "").replace("\t", "")
-        command_list = split[0].split('--')[1:]
-        main_command = command_list[0]
+        command_list = split[0].split(' --')
+        main_command = command_list[0].strip().split(" ")[1]
         response = config_infra(command_list, config)
     else:
-        command_list = update.message.text.split('--')[1:]
-        main_command = command_list[0]
+        command_list = update.message.text.split(' --')
+        main_command = command_list[0].strip().split(" ")[1]
         response = "(%s) command invalid. " % main_command
 
     if main_command == "add":  # /infra add --user=test_user --vm=1
@@ -114,7 +113,7 @@ def add_infra(command_list):
     if "account_username" in variables and "vm" in variables:
         new_infra = {
             "account_username": variables["account_username"],
-            "vm": variables["vm"],
+            "infra_id": variables["vm"],
             "status": "Unknown",
             "last_update": get_formatted_date(datetime.datetime.now()),
             "config": ""
@@ -127,9 +126,9 @@ def add_infra(command_list):
 
 def config_infra(command_list, config):
     variables = get_variables(command_list)
-    if "vm" in variables != "":
+    if "vm" in variables:
         infra_data = {
-            "vm": variables["vm"],
+            "infra_id": variables["vm"],
             "config": config
         }
         response = update_infra_data(infra_data)
