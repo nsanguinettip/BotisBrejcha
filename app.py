@@ -76,6 +76,10 @@ def process_config(variables):
         new_config["interaction_flags"]["messages_on"] = True
         new_config["interaction_flags"]["comments_on"] = True
         new_config["interaction_flags"]["likes_on"] = True
+    if "filter_type" in variables:
+        new_config["filter_type"] = variables["filter_type"]
+    else:
+        new_config["filter_type"] = "all"
     return new_config
 
 
