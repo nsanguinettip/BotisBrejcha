@@ -80,6 +80,12 @@ def process_config(variables):
         new_config["filter_type"] = variables["filter_type"]
     else:
         new_config["filter_type"] = "all"
+
+    if "inbox_link" in variables:
+        new_config["inbox_link"] = variables["inbox_link"]
+    else:
+        new_config["inbox_link"] = ""
+
     return new_config
 
 
