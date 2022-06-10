@@ -7,7 +7,7 @@ from telegram.ext import CommandHandler
 from telegram.ext import Updater
 from telegram.ext import MessageHandler, Filters
 from Common.Util import get_formatted_date, get_variables
-from Common.APIManagement import add_infra_data, get_infra_data as get_infra_list, get_acc_infra_data, update_infra_data, get_pending_jobs, add_pending_job, delete_pending_job, get_recurrent_jobs
+from Common.APIManagement import add_infra_data, get_infra_data as get_infra_list, get_acc_infra_data, update_infra_data, get_pending_jobs, add_pending_job, delete_pending_job, get_recurrent_jobs, start_remote_infra, stop_remote_infra, reset_remote_infra
 
 TOKEN = '5357158986:AAFjtqG2iToqVfLOD8VIlO_pGlGjg-k7VyI'
 
@@ -114,8 +114,14 @@ def infra(update: Update, context: CallbackContext):
         response = add_infra(command_list)
     if main_command == "list":  # /infra list
         response = get_infra_list()
-    if main_command == "get":  # /infra get --user=test_test
+    if main_command == "get":  # /infra get --vm=1
         response = get_infra(command_list)
+    if main_command == "start":  # /infra start --vm=1
+        response = start_infra(command_list)
+    if main_command == "stop":  # /infra stop --vm=1
+        response = stop_infra(command_list)
+    if main_command == "reset":  # /infra reset --vm=1
+        response = reset_infra(command_list)
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=response)
 
@@ -124,6 +130,33 @@ def get_infra(command_list):
     variables = get_variables(command_list)
     if "vm" in variables:
         response = get_acc_infra_data(variables["vm"])
+        return response
+    else:
+        return "Missing parameters."
+
+
+def start_infra(command_list):
+    variables = get_variables(command_list)
+    if "vm" in variables:
+        response = start_remote_infra(variables["vm"])
+        return response
+    else:
+        return "Missing parameters."
+
+
+def stop_infra(command_list):
+    variables = get_variables(command_list)
+    if "vm" in variables:
+        response = stop_remote_infra(variables["vm"])
+        return response
+    else:
+        return "Missing parameters."
+
+
+def reset_infra(command_list):
+    variables = get_variables(command_list)
+    if "vm" in variables:
+        response = reset_remote_infra(variables["vm"])
         return response
     else:
         return "Missing parameters."

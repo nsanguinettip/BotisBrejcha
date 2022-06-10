@@ -21,8 +21,7 @@ def get_variables(command_list):
         "post_list": "post_list",
         "only_dm": "only_dm",
         "interactions": "interactions",
-        "filter_type": "filter_type",
-        "inbox_link": "inbox_link"
+        "filter_type": "filter_type"
     }
 
     for variable in command_list[1:]:
