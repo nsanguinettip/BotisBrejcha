@@ -28,7 +28,14 @@ def get_variables(command_list):
         if "=" in variable:
             split = variable.split("=")
             variable_name = split[0].strip()
-            value = split[1].replace('"', "").replace("'", '').strip()
+            value = ""
+            if len(split) > 2:
+                for part in split[1:]:
+                    value += part + '='
+                value = value.replace('"', "").replace("'", '').strip()
+            else:
+                value = split[1].replace('"', "").replace("'", '').strip()
+
             for key, val in accepted_variables.items():
                 if variable_name.lower() == key:
                     variables[val] = value
