@@ -2,7 +2,8 @@ import requests
 import json
 
 COMMON_HEADERS = {'Content-type': 'application/json'}
-END_POINT = 'pizzapi.ddns.net'
+#END_POINT = 'pizzapi.ddns.net'
+END_POINT = '127.0.0.1'
 END_POINT_INFRA = '192.168.2.127'
 PORT = 5000
 
@@ -46,7 +47,13 @@ def delete_pending_job(job_id):
 
 
 def update_job(job_data):
-    response = requests.put("http://%s:%d/api/v1/Infrastructure/" %
+    response = requests.put("http://%s:%d/api/v1/Jobs/" %
+                             (END_POINT, PORT), json.dumps(job_data), headers=COMMON_HEADERS)
+    return response.json()
+
+
+def update_job_start(job_data):
+    response = requests.put("http://%s:%d/api/v1/Jobs/start/" %
                              (END_POINT, PORT), json.dumps(job_data), headers=COMMON_HEADERS)
     return response.json()
 

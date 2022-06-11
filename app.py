@@ -7,7 +7,7 @@ from telegram.ext import CommandHandler
 from telegram.ext import Updater
 from telegram.ext import MessageHandler, Filters
 from Common.Util import get_formatted_date, get_variables
-from Common.APIManagement import add_infra_data, get_infra_data as get_infra_list, get_acc_infra_data, update_infra_data, get_pending_jobs, add_pending_job, delete_pending_job, get_recurrent_jobs, start_remote_infra, stop_remote_infra, reset_remote_infra
+from Common.APIManagement import add_infra_data, get_infra_data as get_infra_list, get_acc_infra_data, update_infra_data, get_pending_jobs, add_pending_job, delete_pending_job, get_recurrent_jobs, start_remote_infra, stop_remote_infra, reset_remote_infra, update_job_start as update_start_job
 
 TOKEN = '5357158986:AAFjtqG2iToqVfLOD8VIlO_pGlGjg-k7VyI'
 
@@ -20,6 +20,8 @@ def jobs(update: Update, context: CallbackContext):
 
     if main_command == "new":  # /run new --job=L --duration=120 --intensity=2 --recurrent=1 --start="01-31-2022 10:02" --vm=1 --links=""
         response = add_job(command_list)
+    if main_command == "update":  # /run update --job_id=12 --start_time="12:00"
+        response = update_job_start(command_list)
     if main_command == "list":  # /run list --vm=1
         response = get_job_list(command_list)
     if main_command == "delete":  # /run delete --job_id=1
@@ -53,6 +55,15 @@ def add_job(command_list):
     else:
         return "Missing parameters."
 
+
+def update_job_start(command_list):
+    variables = get_variables(command_list)
+    if "job_id" in variables and "start_time" in variables:
+        updated_job = {"start_time": variables["start_time"], "job_id": variables["job_id"]}
+        response = update_start_job(updated_job)
+        return response
+    else:
+        return "Missing parameters."
 
 def process_config(variables):
     new_config = {"duration": variables["duration"], "intensity": variables["intensity"]}
