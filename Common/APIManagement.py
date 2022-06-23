@@ -2,10 +2,11 @@ import requests
 import json
 
 COMMON_HEADERS = {'Content-type': 'application/json'}
-#END_POINT = 'pizzapi.ddns.net'
-END_POINT = '127.0.0.1'
+END_POINT = 'pizzapi.azurewebsites.net'
+#END_POINT = '127.0.0.1'
 END_POINT_INFRA = '192.168.2.127'
-PORT = 5000
+PORT = 80
+PORT_INFRA = 5000
 
 
 ############################################################################################################
@@ -69,25 +70,25 @@ def get_infra_data():
 
 def start_remote_infra(infra_id):
     response = requests.get("http://%s:%d/api/v1/Infrastructure/start?infra_id=%s" %
-                            (END_POINT_INFRA, PORT, infra_id), headers=COMMON_HEADERS)
+                            (END_POINT_INFRA, PORT_INFRA, infra_id), headers=COMMON_HEADERS)
     return response.json()
 
 
 def stop_remote_infra(infra_id):
     response = requests.get("http://%s:%d/api/v1/Infrastructure/stop?infra_id=%s" %
-                            (END_POINT_INFRA, PORT, infra_id), headers=COMMON_HEADERS)
+                            (END_POINT_INFRA, PORT_INFRA, infra_id), headers=COMMON_HEADERS)
     return response.json()
 
 
 def reset_remote_infra(infra_id):
     response = requests.get("http://%s:%d/api/v1/Infrastructure/reset?infra_id=%s" %
-                            (END_POINT_INFRA, PORT, infra_id), headers=COMMON_HEADERS)
+                            (END_POINT_INFRA, PORT_INFRA, infra_id), headers=COMMON_HEADERS)
     return response.json()
 
 
 def get_acc_infra_data(infra_id):
     response = requests.get("http://%s:%d/api/v1/Infrastructure/id?infra_id=%s" %
-                            (END_POINT_INFRA, PORT, infra_id), headers=COMMON_HEADERS)
+                            (END_POINT_INFRA, PORT_INFRA, infra_id), headers=COMMON_HEADERS)
     return response.json()
 
 

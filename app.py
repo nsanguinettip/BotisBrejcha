@@ -1,6 +1,8 @@
 import datetime
 import json
 import logging
+import random
+
 from telegram import Update
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
@@ -17,6 +19,7 @@ def jobs(update: Update, context: CallbackContext):
     command_list = update.message.text.split(' --')
     main_command = command_list[0].strip().split(" ")[1]
     response = "(%s) command invalid. " % main_command
+
 
     if main_command == "new":  # /run new --job=L --duration=120 --intensity=2 --recurrent=1 --start="01-31-2022 10:02" --vm=1 --links=""
         response = add_job(command_list)
@@ -125,8 +128,8 @@ def infra(update: Update, context: CallbackContext):
         response = add_infra(command_list)
     if main_command == "list":  # /infra list
         response = get_infra_list()
-    if main_command == "get":  # /infra get --vm=1
-        response = get_infra(command_list)
+   # if main_command == "get":  # /infra get --vm=1
+   #     response = get_infra(command_list)
     if main_command == "start":  # /infra start --vm=1
         response = start_infra(command_list)
     if main_command == "stop":  # /infra stop --vm=1
@@ -227,7 +230,21 @@ Im @BotisBrejchaBot. Here are some commands you can try:
 
 
 def echo(update: Update, context: CallbackContext):
-    context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
+    if "quien" in update.message.text.lower():
+        rand = random.uniform(0, 1)
+        if rand < 0.1:
+            context.bot.send_message(chat_id=update.effective_chat.id, text="Dejen laburar hijos de puta")
+        else:
+            context.bot.send_message(chat_id=update.effective_chat.id, text="Yo")
+    elif "who" in update.message.text.lower():
+        rand = random.uniform(0, 1)
+        if rand < 0.1:
+            context.bot.send_message(chat_id=update.effective_chat.id, text="Dejen laburar hijos de puta")
+        else:
+            context.bot.send_message(chat_id=update.effective_chat.id, text="Me")
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
+        print(update.message.reply_to_message)
 
 
 def run(update: Update, context: CallbackContext):
