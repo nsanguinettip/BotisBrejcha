@@ -10,12 +10,11 @@ from telegram.ext import Updater
 from telegram import KeyboardButton, ReplyKeyboardMarkup
 from telegram.ext import MessageHandler, Filters
 from Common.Util import get_formatted_date, get_variables
-from Common.APIManagement import add_infra_data, get_infra_data as get_infra_list, get_acc_infra_data, update_infra_data, get_pending_jobs, add_pending_job, delete_pending_job, get_recurrent_jobs, start_remote_infra, stop_remote_infra, reset_remote_infra, update_job_start as update_start_job, update_infra_interactions, get_infra_interactions as get_interactions, get_contacts as get_contacts_report, get_interaction_by_user as get_interactions_user
+from Common.APIManagement import add_infra_data, get_infra_data as get_infra_list, get_acc_infra_data, update_infra_data, get_pending_jobs, add_pending_job, delete_pending_job, get_recurrent_jobs, start_remote_infra, stop_remote_infra, reset_remote_infra, update_job_start as update_start_job, update_infra_interactions, get_infra_interactions as get_interactions, get_contacts as get_contacts_report, get_interaction_by_user as get_interactions_user, get_manual_profiles, update_validated_profiles
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes, ConversationHandler
 
-
-TOKEN = '5357158986:AAFjtqG2iToqVfLOD8VIlO_pGlGjg-k7VyI'
+TOKEN = '5482457484:AAHKczj_u8T21ft_jBX-x6Q3e9yZtZ4xjGk'
 
 
 def jobs(update: Update, context: CallbackContext):
@@ -64,7 +63,7 @@ def add_job(command_list, author_telegram_id):
         if response["code"] == 200:
             response_text = "Trabajo agregado."
         else:
-            response_text = "Error, no se pudo agregar"
+            response_text = "Error, no se pudo agregar el trabajo"
     else:
         response_text = "Parametros faltantes."
     return response_text
@@ -319,34 +318,39 @@ def run(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.effective_chat.id, text=soon_message)
 
 
-async def start(update: Update, context: ContextTypes) -> None:
-    """Sends a message with three inline buttons attached."""
-    keyboard = [
-        [
-            InlineKeyboardButton("Option 1", callback_data="1"),
-            InlineKeyboardButton("Option 2", callback_data="2"),
-        ],
-        [InlineKeyboardButton("Option 3", callback_data="3")],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("Please choose:", reply_markup=reply_markup)
+def validator_files(update: Update, context: CallbackContext):
+    profile_count = 10
+    profile_list = get_manual_profiles(profile_count)
+    for profile in profile_list:
+        url = 'https://twitter.com/%s' % profile["username"]
+        button = [
+                [InlineKeyboardButton("👍", callback_data="like"),
+                 InlineKeyboardButton("👎", callback_data="dislike")],
+        ]
+        reply_markup = InlineKeyboardMarkup(button)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=url, reply_markup=reply_markup)
 
 
-async def button(update: Update, context: ContextTypes) -> None:
-    """Parses the CallbackQuery and updates the message text."""
-    query = update.callback_query
-    # CallbackQueries need to be answered, even if no notification to the user is needed
-    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
-    await query.answer()
-    await query.edit_message_text(text=f"Selected option: {query.data}")
+def button(update: Update, context: CallbackContext):
+    twitter_profile = update.callback_query.message["text"]
+    username = twitter_profile.strip().split(".com/")[1]
+    querydata = update.callback_query
+    if querydata.data == "Like":
+        validated = True
+    else:
+        validated = False
+    profile = {
+        'username': username,
+        'validated': validated
+    }
+    update_validated_profiles([profile])
+    context.bot.send_message(chat_id=querydata.message.chat_id,
+                             text="Diste %s a %s." % (querydata.data, username))
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 updater = Updater(token=TOKEN, use_context=True)
 dispatcher = updater.dispatcher
-
-start_handler = CommandHandler('start', start)
-dispatcher.add_handler(start_handler)
 
 infra_handler = CommandHandler('infra', infra)
 dispatcher.add_handler(infra_handler)
@@ -359,5 +363,11 @@ dispatcher.add_handler(help_handler)
 
 echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
 dispatcher.add_handler(echo_handler)
+
+validator_files = CommandHandler("validate", validator_files)
+dispatcher.add_handler(validator_files)
+
+button_handler = CallbackQueryHandler(button)
+dispatcher.add_handler(button_handler)
 
 updater.start_polling()
