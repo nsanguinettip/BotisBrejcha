@@ -335,7 +335,7 @@ def button(update: Update, context: CallbackContext):
     twitter_profile = update.callback_query.message["text"]
     username = twitter_profile.strip().split(".com/")[1]
     querydata = update.callback_query
-    if querydata.data == "Like":
+    if querydata.data == "like":
         validated = True
     else:
         validated = False
