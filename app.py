@@ -10,11 +10,13 @@ from telegram.ext import Updater
 from telegram import KeyboardButton, ReplyKeyboardMarkup
 from telegram.ext import MessageHandler, Filters
 from Common.Util import get_formatted_date, get_variables
-from Common.APIManagement import add_infra_data, get_infra_data as get_infra_list, get_acc_infra_data, update_infra_data, get_pending_jobs, add_pending_job, delete_pending_job, get_recurrent_jobs, start_remote_infra, stop_remote_infra, reset_remote_infra, update_job_start as update_start_job, update_infra_interactions, get_infra_interactions as get_interactions, get_contacts as get_contacts_report, get_interaction_by_user as get_interactions_user, get_manual_profiles, update_validated_profiles
+from Common.APIManagement import add_infra_data, get_infra_data as get_infra_list, get_acc_infra_data, update_infra_data, get_pending_jobs, add_pending_job, delete_pending_job, get_recurrent_jobs, start_remote_infra, stop_remote_infra, reset_remote_infra, update_job_start as update_start_job, update_infra_interactions, get_infra_interactions as get_interactions, get_contacts as get_contacts_report, get_interaction_by_user as get_interactions_user, get_manual_profiles, update_validated_profiles, add_blacklist
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes, ConversationHandler
 
-TOKEN = '5482457484:AAHKczj_u8T21ft_jBX-x6Q3e9yZtZ4xjGk'
+
+TOKEN = '5357158986:AAFjtqG2iToqVfLOD8VIlO_pGlGjg-k7VyI'
+#TOKEN = '5482457484:AAHKczj_u8T21ft_jBX-x6Q3e9yZtZ4xjGk'
 
 
 def jobs(update: Update, context: CallbackContext):
@@ -336,14 +338,16 @@ def button(update: Update, context: CallbackContext):
     username = twitter_profile.strip().split(".com/")[1]
     querydata = update.callback_query
     if querydata.data == "like":
-        validated = True
+        profile = {
+            'username': username,
+            'validated': True
+        }
+        update_validated_profiles([profile])
     else:
-        validated = False
-    profile = {
-        'username': username,
-        'validated': validated
-    }
-    update_validated_profiles([profile])
+        profile = {
+            'username': username
+        }
+        add_blacklist([profile])
     context.bot.send_message(chat_id=querydata.message.chat_id,
                              text="Diste %s a %s." % (querydata.data, username))
 

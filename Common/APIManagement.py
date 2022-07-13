@@ -29,6 +29,13 @@ def update_validated_profiles(profile_list):
                             (END_POINT, PORT), json.dumps(profile_list), headers=COMMON_HEADERS)
     return response.json()
 
+
+def add_blacklist(profile_list):
+    response = requests.post("http://%s:%d/api/v1/TwitterProfiles/Blacklist/" %
+                             (END_POINT, PORT), json.dumps(profile_list), headers=COMMON_HEADERS)
+    return response.json()
+
+
 ############################################################################################################
 #    JOBS
 ##########################################################################################################
