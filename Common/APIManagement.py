@@ -3,10 +3,9 @@ import json
 
 COMMON_HEADERS = {'Content-type': 'application/json'}
 END_POINT = 'pizzapi.azurewebsites.net'
-#END_POINT = '127.0.0.1'
 END_POINT_INFRA = '192.168.1.127'
 PORT = 80
-PORT_INFRA = 5000
+PORT_INFRA = 1919
 
 
 ############################################################################################################
@@ -15,24 +14,6 @@ PORT_INFRA = 5000
 def get_twitter_profiles(account, delta, profile_count):
     response = requests.get("http://%s:%d/api/v1/TwitterProfiles?account=%s&delta=%s&profile_count=%s" % (END_POINT, PORT, account, delta, profile_count),
                             headers=COMMON_HEADERS)
-    return response.json()
-
-
-def get_manual_profiles(profile_count):
-    response = requests.get("http://%s:%d/api/v1/TwitterProfiles/manual/?profile_count=%s" % (END_POINT, PORT, profile_count),
-                            headers=COMMON_HEADERS)
-    return response.json()
-
-
-def update_validated_profiles(profile_list):
-    response = requests.put("http://%s:%d/api/v1/TwitterProfiles/manual/" %
-                            (END_POINT, PORT), json.dumps(profile_list), headers=COMMON_HEADERS)
-    return response.json()
-
-
-def add_blacklist(profile_list):
-    response = requests.post("http://%s:%d/api/v1/TwitterProfiles/Blacklist/" %
-                             (END_POINT, PORT), json.dumps(profile_list), headers=COMMON_HEADERS)
     return response.json()
 
 
@@ -49,7 +30,7 @@ def get_pending_jobs(infra_id):
 
 def get_recurrent_jobs(infra_id):
     response = requests.get("http://%s:%d/api/v1/Jobs/recurrent/?infra_id=%s" %
-                             add_pending_job(END_POINT, PORT, infra_id), headers=COMMON_HEADERS)
+                             (END_POINT, PORT, infra_id), headers=COMMON_HEADERS)
     return response.json()
 
 
