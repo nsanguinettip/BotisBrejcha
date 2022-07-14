@@ -17,6 +17,21 @@ def get_twitter_profiles(account, delta, profile_count):
     return response.json()
 
 
+def get_manual_profiles(profile_count):
+    response = requests.get("http://%s:%d/api/v1/TwitterProfiles/manual/?profile_count=%s" % (END_POINT, PORT, profile_count),
+                            headers=COMMON_HEADERS)
+    return response.json()
+
+
+def update_validated_profiles(profile_list):
+    response = requests.put("http://%s:%d/api/v1/TwitterProfiles/manual/" %
+                            (END_POINT, PORT), json.dumps(profile_list), headers=COMMON_HEADERS)
+    return response.json()
+
+def add_blacklist(profile_list):
+    response = requests.post("http://%s:%d/api/v1/TwitterProfiles/Blacklist/" %
+                             (END_POINT, PORT), json.dumps(profile_list), headers=COMMON_HEADERS)
+    return response.json()
 ############################################################################################################
 #    JOBS
 ##########################################################################################################

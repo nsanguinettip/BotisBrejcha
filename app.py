@@ -2,17 +2,14 @@ import datetime
 import json
 import logging
 import random
-from telegram import Update
 from telegram.ext import CallbackQueryHandler
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import Updater
-from telegram import KeyboardButton, ReplyKeyboardMarkup
 from telegram.ext import MessageHandler, Filters
 from Common.Util import get_formatted_date, get_variables
 from Common.APIManagement import add_infra_data, get_infra_data as get_infra_list, get_acc_infra_data, update_infra_data, get_pending_jobs, add_pending_job, delete_pending_job, get_recurrent_jobs, start_remote_infra, stop_remote_infra, reset_remote_infra, update_job_start as update_start_job, update_infra_interactions, get_infra_interactions as get_interactions, get_contacts as get_contacts_report, get_interaction_by_user as get_interactions_user, get_manual_profiles, update_validated_profiles, add_blacklist
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import ContextTypes, ConversationHandler
 
 
 TOKEN = '5357158986:AAFjtqG2iToqVfLOD8VIlO_pGlGjg-k7VyI'
