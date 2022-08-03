@@ -2,9 +2,9 @@ import requests
 import json
 
 COMMON_HEADERS = {'Content-type': 'application/json'}
-#END_POINT = 'pizzapi.azurewebsites.net'
+END_POINT = 'pizzapi.azurewebsites.net'
 END_POINT_INFRA = '192.168.1.127'
-#PORT = 80
+PORT = 80
 PORT_INFRA = 1919
 
 

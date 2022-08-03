@@ -2,7 +2,7 @@ import datetime
 import json
 import logging
 import random
-import prettytable as pt
+#import prettytable as pt
 from telegram.ext import CallbackQueryHandler
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
@@ -347,7 +347,7 @@ def validator_files(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id, text=url, reply_markup=reply_markup)
 
 
-'''def validate_button(update, context):
+def validate_button(update, context):
     twitter_profile = update.callback_query.message["text"]
     username = twitter_profile.strip().split(".com/")[1]
     querydata = update.callback_query
@@ -363,7 +363,7 @@ def validator_files(update: Update, context: CallbackContext):
         }
         add_blacklist([profile])
     context.bot.send_message(chat_id=querydata.message.chat_id,
-                             text="Diste %s a %s." % (querydata.data, username))'''
+                             text="Diste %s a %s." % (querydata.data, username))
 
 
 def test(update, context):
@@ -639,8 +639,8 @@ dispatcher.add_handler(echo_handler)
 validator_files = CommandHandler("validate", validator_files)
 dispatcher.add_handler(validator_files)
 
-#validate_button_handler = CallbackQueryHandler(validate_button)
-#dispatcher.add_handler(validate_button_handler)
+validate_button_handler = CallbackQueryHandler(validate_button)
+dispatcher.add_handler(validate_button_handler)
 
 updater.dispatcher.add_handler(CallbackQueryHandler(main_menu, pattern='main'))
 updater.dispatcher.add_handler(CallbackQueryHandler(vm_menu, pattern='new'))
